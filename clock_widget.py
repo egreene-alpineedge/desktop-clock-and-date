@@ -13,7 +13,7 @@ class ClockWidget:
         self.root.overrideredirect(True)
 
         # Set window size and position
-        window_width = 700
+        window_width = 750
         window_height = 900
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
@@ -36,6 +36,14 @@ class ClockWidget:
 
         # Make background transparent
         self.root.attributes("-transparentcolor", self.panel)
+
+        # Variables for dragging
+        self.offset_x = 0
+        self.offset_y = 0
+
+        # Bind drag events so clicking anywhere on the widget can move it
+        self.root.bind("<Button-1>", self.start_drag)
+        self.root.bind("<B1-Motion>", self.do_drag)
 
         # Create main container frame without border
         self.main_frame = tk.Frame(
@@ -431,6 +439,17 @@ class ClockWidget:
 
         # Schedule next update (every 100ms for smooth seconds)
         self.root.after(100, self.update_clock)
+
+    def start_drag(self, event):
+        """Record the starting position for dragging"""
+        self.offset_x = event.x
+        self.offset_y = event.y
+
+    def do_drag(self, event):
+        """Handle window dragging"""
+        x = self.root.winfo_x() + event.x - self.offset_x
+        y = self.root.winfo_y() + event.y - self.offset_y
+        self.root.geometry(f"+{x}+{y}")
 
     def run(self):
         """Start the main event loop"""
